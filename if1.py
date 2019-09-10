@@ -13,13 +13,25 @@
 * Вывести содержимое переменной на экран
 
 """
+def check_user_age(age: int) -> str:
+    
+    if age < 0:
+        raise ValueError('Age could not be negative.')
+    elif age < 6:
+        return 'Пользователь должно быть учится в детском саду.'
+    elif age < 16:
+        return 'Пользователь должно быть учится в школе.'
+    elif age < 23:
+        return 'Пользователь должно быть учится в университете.'
+    elif age < 65:
+        return 'Пользователь должно быть работает.'
+    else:
+        return 'Пользователь должно быть на пенсии.'
 
 def main():
-    """
-    Эта функция вызывается автоматически при запуске скрипта в консоли
-    В ней надо заменить pass на ваш код
-    """
-    pass
+    user_age = int(input("Введите возраст пользователя: "))
+    age_preferences = check_user_age(user_age)
+    print(age_preferences)
 
 if __name__ == "__main__":
     main()
