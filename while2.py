@@ -19,7 +19,8 @@ def ask_user_dict():
             "Как погода?":"Дождливо."}
     while True:
         user_question = input("Пользователь: ")
-        print("Программа:",answers_dict.get(user_question,''))
+        if user_question in answers_dict: 
+            print("Программа:",answers_dict.get(user_question))
 
 
 if __name__ == "__main__":
