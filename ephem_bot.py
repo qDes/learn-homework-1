@@ -17,6 +17,7 @@ import ephem
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from settings import TOKEN
+from settings import PROXY
 from datetime import datetime
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -24,24 +25,6 @@ logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     filename='bot.log'
 )
 
-
-PROXY = {
-    'proxy_url': 'socks5://t3.learn.python.ru:1080',
-    'urllib3_proxy_kwargs': {
-        'username': 'learn', 
-        'password': 'python'
-    }
-}
-
-PLANETS = {
-            "mercury": ephem.Mercury(),
-            "venus": ephem.Venus(),
-            "mars": ephem.Mars(),
-            "jupiter": ephem.Jupiter(),
-            "saturn": ephem.Saturn(),
-            "uranus": ephem.Uranus(),
-            "neptune": ephem.Neptune(),
-        }
 
 def greet_user(bot, update):
     text = 'Вызван /start'
@@ -53,14 +36,15 @@ def send_planet_constellation(bot, update):
     user_text= update.message.text
     #try to get planet name from text
     try:
-        planet_name = user_text.split()[1].lower()
-        planet = PLANETS[planet_name]
-    except (KeyError, IndexError):
+        planet_name = user_text.split()[1]
+        #create planet instance
+        planet = getattr(ephem,planet_name)()
+    except (AttributeError, IndexError):
         update.message.reply_text("Try another planet.")
     
     planet.compute(datetime.now())
     constellation = ephem.constellation(planet)[1]
-    update.message.reply_text(f'{planet_name.capitalize()} in {constellation} today.')
+    update.message.reply_text(f'{planet_name} in {constellation} today.')
 
 
 def talk_to_me(bot, update):
@@ -69,8 +53,8 @@ def talk_to_me(bot, update):
     update.message.reply_text(user_text)
  
 
-def main(token):
-    mybot = Updater(token, request_kwargs=PROXY)
+def main(token, proxy):
+    mybot = Updater(token, request_kwargs=proxy)
     
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
@@ -82,4 +66,4 @@ def main(token):
        
 
 if __name__ == "__main__":
-    main(TOKEN)
+    main(TOKEN,PROXY)
